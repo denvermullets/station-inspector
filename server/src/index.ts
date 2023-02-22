@@ -1,12 +1,13 @@
 import express from "express";
-import { Request, Response } from "express";
-const PORT = 3000,
+import csvRouter from "./routes/csv.routes";
 
-app = express();
+const PORT = 3000;
+const app = express();
 
-app.get("/api/v1", (req: Request, res: Response) => {
-  const response = {'hi':'this works'}
-  res.send(response);
-});
+app.use(express.json());
 
-app.listen(PORT, () => console.log());
+app.use("/api/v1/", csvRouter);
+
+app.listen(PORT, () =>
+  console.log(`station-inspector API listening on ${PORT}`)
+);
