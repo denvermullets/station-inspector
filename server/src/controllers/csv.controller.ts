@@ -11,9 +11,9 @@ export const getCSV = async (req: Request, res: Response) => {
       Number(numExtraColumns || 0)
     );
 
-    fs.writeFileSync("./downloads/carInfo.csv", csv);
+    fs.writeFileSync("./files/downloads/carInfo.csv", csv);
 
-    return res.json({ message: "file saved in server/downloads" });
+    return res.json({ message: "file saved in server/files/downloads" });
   } catch (error) {
     return res.status(500).send(error);
   }
