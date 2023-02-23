@@ -33,3 +33,7 @@ build
 dump.rdb
 
 /cypress/videos
+
+# files generated specific to this app
+/files/uploads/*
+/files/downloads/*
