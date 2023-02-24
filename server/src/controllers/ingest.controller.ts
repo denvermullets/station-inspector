@@ -5,7 +5,7 @@ import csv from "csv-parser";
 export const ingestCSV = async (req: Request, res: Response) => {
   const { file } = req;
 
-  if (!file?.path) {
+  if (!file) {
     return res.status(400).send("Missing required file properties");
   }
 

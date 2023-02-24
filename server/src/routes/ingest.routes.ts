@@ -8,7 +8,7 @@ const ingestRouter = express.Router();
 
 ingestRouter.post(
   "/ingest",
-  upload.single("carInfo"),
+  upload.single("file"),
   async (req: Request, res: Response) => await ingestCSV(req, res)
 );
 
