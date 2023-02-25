@@ -3,6 +3,7 @@ import {
   Container,
   Flex,
   FormControl,
+  Progress,
   Select,
   Stack,
   useToast,
@@ -11,12 +12,15 @@ import axios from "axios";
 import { ChangeEvent, useEffect, useState } from "react";
 import { Provider } from "../../models/Provider";
 import DropFile from "./DropFile";
+import socket from "./socketConnection";
 
 const UploadForm: React.FC = () => {
   const toast = useToast();
   const [file, setFile] = useState<File | null>(null);
   const [providers, setProviders] = useState<Provider[]>([]);
   const [selectedProvider, setSelectedProvider] = useState<string | null>(null);
+  const [progress, setProgress] = useState<number>(0);
+  const [uploadStarted, setUploadStarted] = useState<boolean>(false);
 
   useEffect(() => {
     if (file) {
@@ -46,6 +50,13 @@ const UploadForm: React.FC = () => {
     }
   }, [providers]);
 
+  useEffect(() => {
+    if (progress > 99) {
+      setUploadStarted(false);
+      setProgress(0);
+    }
+  }, [progress, uploadStarted]);
+
   const handleProviderChange = (event: ChangeEvent<HTMLSelectElement>) => {
     setSelectedProvider(event.target.value);
   };
@@ -72,7 +83,7 @@ const UploadForm: React.FC = () => {
       });
       return;
     }
-
+    setUploadStarted(true);
     const formData = new FormData();
     formData.append("file", file);
     formData.append("providerId", selectedProvider);
@@ -99,6 +110,17 @@ const UploadForm: React.FC = () => {
       console.error(error);
     }
   };
+
+  socket.on("progress", (data) => {
+    if (data.progress > progress) {
+      setProgress(data.progress);
+    }
+  });
+
+  socket.on("completed", (data) => {
+    setUploadStarted(false);
+    setProgress(0);
+  });
 
   return (
     <Container
@@ -132,6 +154,7 @@ const UploadForm: React.FC = () => {
           <FormControl id="file-upload">
             <DropFile setFile={setFile} />
           </FormControl>
+          {uploadStarted && <Progress hasStripe value={progress} />}
           <Flex direction="row-reverse">
             <Button onClick={() => handleSubmit()}>Upload CSV</Button>
           </Flex>
