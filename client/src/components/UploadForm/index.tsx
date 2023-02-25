@@ -119,8 +119,6 @@ const UploadForm: React.FC = () => {
               <Select
                 placeholder="Select a Provider"
                 onChange={handleProviderChange}
-                // value={selectedProvider}
-                // options={providers}
               >
                 {providers &&
                   providers.map((provider) => (
