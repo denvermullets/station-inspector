@@ -27,12 +27,10 @@ export const generateCSV = (
     "Zip Code",
   ];
 
-  // i want to be able to randomly mix up the CSV on creation, will come back
   for (let i = 0; i < numExtraColumns; i++) {
     columns.push(faker.lorem.word());
   }
 
-  // columns = columns.sort(() => Math.random() - 0.5);
   let csv = columns.join(",") + "\n";
 
   for (let i = 0; i < numRows; i++) {

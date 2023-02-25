@@ -1,12 +1,9 @@
 import React, { ChangeEvent, DragEvent, useRef } from "react";
 import {
-  Button,
-  Center,
   HStack,
   Icon,
   Square,
   Text,
-  useColorModeValue,
   VStack,
   Input,
   Box,
@@ -38,9 +35,12 @@ const DropFile: React.FC<DropFileProps> = ({ setFile }) => {
   };
 
   const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
-    event.preventDefault();
     if (event?.target?.files) {
       setFile(event.target.files?.item(0));
+      if (fileInputRef.current) {
+        // reset the fileInputRef so that we can allow the same file to be uploaded again
+        fileInputRef.current.value = "";
+      }
     }
   };
 

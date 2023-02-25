@@ -5,7 +5,6 @@ require("dotenv").config({ path: path.resolve(__dirname, "../../.env") });
 import { Knex } from "knex";
 
 const DB = process.env.DATABASE_URL;
-console.log("DB", DB);
 
 interface IKnexConfig {
   [key: string]: Knex.Config;
