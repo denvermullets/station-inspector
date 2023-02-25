@@ -2,20 +2,13 @@ import IORedis from "ioredis";
 import { Job, Queue, Worker } from "bullmq";
 import { bullRedisConfig } from "../config/redis";
 import { CarPayload } from "../models/vehicle.model";
+import { ingestCarRecord } from "../processor/carWorker.processor";
 
 const connection = new IORedis(bullRedisConfig);
 const ingestQueue = new Queue("Ingest", { connection });
 
 export const ingestCar = async (): Promise<void> => {
-  const carWorker = new Worker(
-    "Ingest",
-    async (job) => {
-      // we could move this to a service processor but probably fine for now here
-
-      console.log("jobbies", job.data);
-    },
-    { connection }
-  );
+  const carWorker = new Worker("Ingest", ingestCarRecord, { connection });
 
   carWorker.on("error", (err: Error): void => {
     console.log(`error ${err}`);

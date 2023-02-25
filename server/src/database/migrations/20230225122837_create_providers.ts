@@ -2,7 +2,7 @@ import { Knex } from "knex";
 
 export async function up(knex: Knex): Promise<void> {
   return await knex.schema.createTable("providers", (t) => {
-    t.uuid("id").unique().notNullable();
+    t.uuid("id").primary().defaultTo(knex.raw("gen_random_uuid()")).unique();
     t.string("name").notNullable();
 
     t.timestamp("created_at").defaultTo(knex.fn.now());

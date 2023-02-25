@@ -3,18 +3,20 @@ import {
   Container,
   Flex,
   FormControl,
-  FormLabel,
-  Input,
+  Select,
   Stack,
   useToast,
 } from "@chakra-ui/react";
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
+import { Provider } from "../../models/Provider";
 import DropFile from "./DropFile";
 
 const UploadForm: React.FC = () => {
   const toast = useToast();
   const [file, setFile] = useState<File | null>(null);
+  const [providers, setProviders] = useState<Provider[]>([]);
+  const [selectedProvider, setSelectedProvider] = useState<string | null>(null);
 
   useEffect(() => {
     if (file) {
@@ -28,6 +30,26 @@ const UploadForm: React.FC = () => {
     }
   }, [file]);
 
+  useEffect(() => {
+    if (!providers.length) {
+      try {
+        axios
+          .get("/api/v1/providers", {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          })
+          .then((response) => setProviders(response.data));
+      } catch (error) {
+        console.error(error);
+      }
+    }
+  }, [providers]);
+
+  const handleProviderChange = (event: ChangeEvent<HTMLSelectElement>) => {
+    setSelectedProvider(event.target.value);
+  };
+
   const handleSubmit = () => {
     if (!file) {
       toast({
@@ -40,8 +62,20 @@ const UploadForm: React.FC = () => {
       return;
     }
 
+    if (!selectedProvider) {
+      toast({
+        title: "Oh no!",
+        description: `You must select a Provider before uploading`,
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
+      return;
+    }
+
     const formData = new FormData();
     formData.append("file", file);
+    formData.append("providerId", selectedProvider);
 
     try {
       axios
@@ -82,21 +116,26 @@ const UploadForm: React.FC = () => {
               spacing={{ base: "1.5", md: "8" }}
               justify="space-between"
             >
-              <FormLabel variant="inline">Provider</FormLabel>
-              <Input
-                type="text"
-                maxW={{ md: "3xl" }}
-                defaultValue="default provider dropdown"
-              />
+              <Select
+                placeholder="Select a Provider"
+                onChange={handleProviderChange}
+                // value={selectedProvider}
+                // options={providers}
+              >
+                {providers &&
+                  providers.map((provider) => (
+                    <option value={provider.id} key={provider.id}>
+                      {provider.name}
+                    </option>
+                  ))}
+              </Select>
             </Stack>
           </FormControl>
           <FormControl id="file-upload">
             <DropFile setFile={setFile} />
           </FormControl>
           <Flex direction="row-reverse">
-            <Button variant="primary" onClick={() => handleSubmit()}>
-              Upload CSV
-            </Button>
+            <Button onClick={() => handleSubmit()}>Upload CSV</Button>
           </Flex>
         </Stack>
       </Stack>

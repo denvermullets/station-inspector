@@ -6,4 +6,5 @@ export type CarPayload = {
   year: number;
   price: number;
   zipCode: string;
+  providerId: string;
 };
