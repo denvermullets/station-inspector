@@ -10,6 +10,7 @@ export const ingestCar = async (): Promise<void> => {
     "Ingest",
     async (job) => {
       // process ingestion
+      console.log("jobbies", job);
     },
     { connection }
   );

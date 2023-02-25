@@ -28,7 +28,7 @@
   "scripts": {
     "build": "yarn install && tsc",
     "start:prod": "yarn db:migrate && node build/index.js",
-    "start": "nodemon ./src/index.ts",
+    "start": "yarn db:migrate && nodemon ./src/index.ts",
     "start:workers": "nodemon ./src/worker.ts",
     "knex": "./node_modules/.bin/knex --knexfile src/database/knexfile.ts",
     "db:migrate": "yarn knex migrate:latest src/database/knexfile.ts",
