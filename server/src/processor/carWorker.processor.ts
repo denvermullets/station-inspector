@@ -1,7 +1,6 @@
 import { Job } from "bullmq";
 import db from "../database/db";
 import { CarPayload } from "../models/vehicle.model";
-import uuid from "uuid";
 
 export const ingestCarRecord = async (payload: Job<CarPayload>) => {
   const { vin, make, model, mileage, year, price, zipCode, providerId } =
