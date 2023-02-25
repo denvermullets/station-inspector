@@ -1,6 +1,7 @@
 import IORedis from "ioredis";
-import { Queue, Worker } from "bullmq";
+import { Job, Queue, Worker } from "bullmq";
 import { bullRedisConfig } from "../config/redis";
+import { CarPayload } from "../models/vehicle.model";
 
 const connection = new IORedis(bullRedisConfig);
 const ingestQueue = new Queue("Ingest", { connection });
@@ -9,8 +10,9 @@ export const ingestCar = async (): Promise<void> => {
   const carWorker = new Worker(
     "Ingest",
     async (job) => {
-      // process ingestion
-      console.log("jobbies", job);
+      // we could move this to a service processor but probably fine for now here
+
+      console.log("jobbies", job.data);
     },
     { connection }
   );
@@ -19,17 +21,17 @@ export const ingestCar = async (): Promise<void> => {
     console.log(`error ${err}`);
   });
 
-  carWorker.on("completed", (job, result): void => {
-    console.log(`job completed`, job, result);
+  carWorker.on("completed", (job: Job): void => {
+    console.log(`job ${job.id} completed`);
   });
 
   carWorker.on("failed", (job, err) => {
     console.log(`${job} has failed with error ${err}`);
   });
 
-  console.log("Send me them Car Records");
+  console.log("Worker is ready to ingest car records");
 };
 
-export const addCarToQueue = async (payload: any): Promise<void> => {
-  await ingestQueue.add("ingestCar", {});
+export const addCarToQueue = async (payload: CarPayload): Promise<void> => {
+  await ingestQueue.add("ingestCar", payload);
 };
